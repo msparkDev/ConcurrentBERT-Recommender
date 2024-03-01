@@ -1,27 +1,38 @@
 # Enhancing E-commerce Recommendation Systems with Concurrent Purchase Data: A Transformer-Based Approach
 
-Authors: Minseo Park, Jangmin Oh*
+## Authors
+Minseo Park, Jangmin Oh*
 
-## Our Novel Contributions are:
+This project presents a novel approach to improving e-commerce recommendation systems by leveraging concurrent purchase data and transformer-based models. Our work demonstrates significant advancements in predictive accuracy and system efficacy, validated with real-world data.
 
-1. **Integration of Concurrent Purchase Data:** We pioneer the integration of concurrent purchase data into e-commerce recommendation systems, utilizing this novel approach to capture complex consumer purchasing patterns and enhance predictive accuracy.
-2. **Transformer-Based Recommendation Algorithm:** Leveraging the BERT model, we develop a transformer-based recommendation algorithm fine-tuned for next-product prediction in e-commerce, showcasing a significant advancement over traditional recommendation systems.
-3. **Validation on Real-World Data:** Our methodology is validated on real-world data from *Katcher's* e-commerce platform, demonstrating superior performance in accurately predicting future purchases and setting a new benchmark for recommendation system efficacy.
+## Key Contributions
 
-## Dependencies
+1. **Integration of Concurrent Purchase Data:** We introduce an innovative method by incorporating concurrent purchase data into e-commerce recommendation systems. This approach allows for a deeper understanding of complex consumer purchasing patterns, significantly enhancing the accuracy of predictions.
 
-To get started with the framework, install the following dependencies:
+2. **Transformer-Based Recommendation Algorithm:** Utilizing the BERT model, we have developed a transformer-based algorithm specifically fine-tuned for predicting the next product a customer is likely to purchase. This method represents a considerable leap forward compared to traditional recommendation systems.
 
-- **Python 3.10**
+3. **Validation on Real-World Data:** Our approach has been rigorously tested using data from Katcher's e-commerce platform. The results showcase our method's superior performance in making accurate predictions, thereby establishing a new standard for recommendation system efficacy.
 
-- `pip install -r requirements.txt`
+## Getting Started
+
+### Dependencies
+
+Ensure you have the following installed to use this framework:
+
+- Python 3.10
+- Required Python packages (install using the command below)
+
+```bash
+pip install -r requirements.txt
+```
 
 ## Data
 
-Due to the proprietary nature of the dataset from Katcher's, we are unable to publicly disclose or share the company's private data. We understand the importance of privacy and confidentiality in handling such information.
+### Note on Data Privacy
+The dataset used in this project is proprietary to Katcher's and, as such, cannot be made publicly available. We prioritize the privacy and confidentiality of this data.
 
-As an alternative for demonstration and reproducibility purposes, we have organized our code to work with an open-source dataset available from the UCI Machine Learning Repository. This dataset can serve as a proxy to understand the methodologies applied in our project:
+### Alternative Dataset for Demonstration
 
-- **Open-Source Dataset:** [Online Retail Dataset](https://archive.ics.uci.edu/ml/datasets/Online+Retail) from the UCI Machine Learning Repository.
+For demonstration purposes, we use the [Online Retail Dataset](https://archive.ics.uci.edu/ml/datasets/Online+Retail) from the UCI Machine Learning Repository. This open-source dataset helps illustrate our methodologies and the application of our framework:
 
-This dataset is utilized to illustrate the application of our algorithms and framework without compromising the privacy of the proprietary data.
+- **Online Retail Dataset:** This dataset contains transaction records from a UK-based online retail platform, covering a period from December 1st, 2010, to December 9th, 2011. It includes various features such as `InvoiceNo`, `StockCode`, `Description`, `Quantity`, `InvoiceDate`, `UnitPrice`, `CustomerID`, and `Country`, making it suitable for e-commerce recommendation system research and development.
