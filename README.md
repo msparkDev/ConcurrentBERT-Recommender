@@ -14,6 +14,6 @@ To get started with the framework, install the following dependencies:
 
 - **Python 3.10**
 
-```bash
+- ```bash
 pip install -r requirements.txt
 ```
