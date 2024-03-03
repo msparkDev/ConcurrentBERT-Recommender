@@ -9,7 +9,7 @@ This project introduces a novel approach to enhance e-commerce recommendation sy
 ## Key Contributions
 1. **Integration of Concurrent Purchase Data**: Our approach uniquely integrates concurrent purchase data, offering new insights into consumer behavior patterns.
 2. **Transformer-Based Algorithm**: We employ a transformer-based recommendation algorithm, significantly outperforming traditional models in predicting next-product purchases.
-3. **Real-World Validation**: Rigorous testing on Katcher's data validates our method's effectiveness in enhancing recommendation accuracy.
+3. **Real-World Validation**: Rigorous testing on Katchers' data validates our method's effectiveness in enhancing recommendation accuracy.
 
 ## Dependencies
 To replicate our work or utilize our framework, ensure the installation of the following:
