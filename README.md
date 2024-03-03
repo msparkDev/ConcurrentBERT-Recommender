@@ -1,38 +1,45 @@
 # Enhancing E-commerce Recommendation Systems with Concurrent Purchase Data: A Transformer-Based Approach
 
 ## Authors
-Minseo Park, Jangmin Oh*
+- Minseo Park
+- Jangmin Oh*
 
-This project presents a novel approach to improving e-commerce recommendation systems by leveraging concurrent purchase data and transformer-based models. Our work demonstrates significant advancements in predictive accuracy and system efficacy, validated with real-world data.
+## Abstract
+This project introduces a novel approach to enhance e-commerce recommendation systems by incorporating concurrent purchase data alongside transformer-based models like BERT. Our methodology demonstrates significant improvements in predictive accuracy and overall system efficacy, as evidenced by extensive validation on real-world data from Katcher's e-commerce platform.
+
+## Introduction
+E-commerce platforms continually seek advanced recommendation systems to enhance user experience and business outcomes. Traditional systems often overlook the rich contextual information available from concurrent purchases. We propose a method that integrates this data, leveraging the BERT model to understand and predict complex consumer purchasing behaviors more accurately.
 
 ## Key Contributions
+1. **Integration of Concurrent Purchase Data**: Our approach uniquely integrates concurrent purchase data, offering new insights into consumer behavior patterns.
+2. **Transformer-Based Algorithm**: We employ a transformer-based recommendation algorithm, significantly outperforming traditional models in predicting next-product purchases.
+3. **Real-World Validation**: Rigorous testing on Katcher's data validates our method's effectiveness in enhancing recommendation accuracy.
 
-1. **Integration of Concurrent Purchase Data:** We introduce an innovative method by incorporating concurrent purchase data into e-commerce recommendation systems. This approach allows for a deeper understanding of complex consumer purchasing patterns, significantly enhancing the accuracy of predictions.
+## Dependencies
+To replicate our work or utilize our framework, ensure the installation of the following:
+- Python 3.10 or higher
+- Required libraries and packages, installable via `pip install -r requirements.txt` in your terminal.
 
-2. **Transformer-Based Recommendation Algorithm:** Utilizing the BERT model, we have developed a transformer-based algorithm specifically fine-tuned for predicting the next product a customer is likely to purchase. This method represents a considerable leap forward compared to traditional recommendation systems.
-
-3. **Validation on Real-World Data:** Our approach has been rigorously tested using data from Katcher's e-commerce platform. The results showcase our method's superior performance in making accurate predictions, thereby establishing a new standard for recommendation system efficacy.
-
-## Getting Started
-
-### Dependencies
-
-Ensure you have the following installed to use this framework:
-
-- Python 3.10
-- Required Python packages (install using the command below)
-
-```bash
-pip install -r requirements.txt
-```
-
-## Data
-
-### Note on Data Privacy
-The dataset used in this project is proprietary to Katcher's and, as such, cannot be made publicly available. We prioritize the privacy and confidentiality of this data.
+## Data Privacy and Usage
+Due to proprietary restrictions, the dataset from Katcher's e-commerce platform is not publicly available. However, to facilitate understanding and reproducibility, we utilize the **Online Retail Dataset** from the UCI Machine Learning Repository as a demonstrative proxy.
 
 ### Alternative Dataset for Demonstration
+- **Online Retail Dataset**: Contains comprehensive transaction records, making it an ideal candidate for research and development in e-commerce recommendation systems.
 
-For demonstration purposes, we use the [Online Retail Dataset](https://archive.ics.uci.edu/ml/datasets/Online+Retail) from the UCI Machine Learning Repository. This open-source dataset helps illustrate our methodologies and the application of our framework:
+## Implementation
+Our project repository is structured to guide you through setting up the environment, preprocessing the data, and executing the recommendation models.
 
-- **Online Retail Dataset:** This dataset contains transaction records from a UK-based online retail platform, covering a period from December 1st, 2010, to December 9th, 2011. It includes various features such as `InvoiceNo`, `StockCode`, `Description`, `Quantity`, `InvoiceDate`, `UnitPrice`, `CustomerID`, and `Country`, making it suitable for e-commerce recommendation system research and development.
+### Setup and Installation
+Clone the repository and install dependencies as follows:
+```bash
+git clone https://github.com/msparkDev/ECommTransformerRecSys.git
+cd ECommTransformerRecSys
+pip install -r requirements.txt
+
+## Data Preparation
+To preprocess the data, considering both scenarios with and without concurrent purchases, execute the following scripts:
+
+```bash
+python scripts/BERT-RecSysWithConcurrentDataPreparation.py
+python scripts/BERT-RecSysWithoutConcurrentDataPreparation.py
+```
