@@ -21,7 +21,7 @@ To replicate our work or utilize our framework, ensure the installation of the f
 - Required libraries and packages, installable via `pip install -r requirements.txt` in your terminal.
 
 ## Data Privacy and Usage
-Due to proprietary restrictions, the dataset from Katcher's e-commerce platform is not publicly available. However, to facilitate understanding and reproducibility, we utilize the [**Online Retail Dataset**](https://archive.ics.uci.edu/ml/datasets/Online+Retail) from the UCI Machine Learning Repository as a demonstrative proxy.
+Due to proprietary restrictions, the dataset from Katchers' e-commerce platform is not publicly available. However, to facilitate understanding and reproducibility, we utilize the [**Online Retail Dataset**](https://archive.ics.uci.edu/ml/datasets/Online+Retail) from the UCI Machine Learning Repository as a demonstrative proxy.
 
 ### Alternative Dataset for Demonstration
 - **Online Retail Dataset**: Contains comprehensive transaction records, making it an ideal candidate for research and development in e-commerce recommendation systems.
