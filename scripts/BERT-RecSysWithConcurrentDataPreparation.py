@@ -113,7 +113,7 @@ train_idx, val_idx = next(gss.split(train_val_data, groups=train_val_data['Custo
 train_data, validation_data = train_val_data.iloc[train_idx], train_val_data.iloc[val_idx]
 
 # Ensure data directory exists
-data_dir = "data"
+data_dir = "data/BERT_ConcurrentPurchases"
 os.makedirs(data_dir, exist_ok=True)
 
 # Save datasets to CSV
