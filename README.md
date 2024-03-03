@@ -35,6 +35,7 @@ Clone the repository and install dependencies as follows:
 git clone https://github.com/msparkDev/ECommTransformerRecSys.git
 cd ECommTransformerRecSys
 pip install -r requirements.txt
+```
 
 ## Data Preparation
 To preprocess the data, considering both scenarios with and without concurrent purchases, execute the following scripts:
