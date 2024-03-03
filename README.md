@@ -34,9 +34,31 @@ pip install -r requirements.txt
 ```
 
 ## Data Preparation
-To preprocess the data, considering both scenarios with and without concurrent purchases, execute the following scripts:
+Our framework considers both scenarios: with and without concurrent purchases, for data preprocessing. To facilitate ease of use and immediate experimentation, we have preprocessed the [Online Retail Dataset](https://archive.ics.uci.edu/ml/datasets/Online+Retail) from the UCI Machine Learning Repository following both scenarios. The preprocessed data is readily available in the repository, allowing you to skip manual preprocessing steps and dive directly into exploring the recommendation models.
 
+### Preprocessed Data Availability
+The preprocessed datasets are stored within the repository, under the following structure:
+- For data considering concurrent purchases: `data/BERT_ConcurrentPurchases`
+- For data not considering concurrent purchases: `data/BERT_SinglePurchases`
+
+Within these directories, you will find:
+- `train_data.csv`, `validation_data.csv`, `test_data.csv`: Splits of the raw data into training, validation, and testing sets.
+- `negative_train.csv`, `negative_val.csv`, `negative_test.csv`: Negative samples for each set, generated through negative sampling.
+- Final datasets for BERT inputs:
+  - `trainForBERT_WCP.csv`, `valForBERT_WCP.csv`, `testForBERT_WCP.csv` for scenarios with concurrent purchases.
+  - `trainForBERT_WOCP.csv`, `valForBERT_WOCP.csv`, `testForBERT_WOCP.csv` for scenarios without concurrent purchases.
+
+### Generating Data
+If you wish to regenerate the data or apply preprocessing to a new dataset, execute the following scripts:
+
+# Generates data with concurrent purchase considerations and stores it in data/BERT_ConcurrentPurchases
 ```bash
 python scripts/BERT-RecSysWithConcurrentDataPreparation.py
+```
+
+# Generates data without concurrent purchase considerations and stores it in data/BERT_SinglePurchases
+```bash
 python scripts/BERT-RecSysWithoutConcurrentDataPreparation.py
 ```
+
+
