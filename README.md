@@ -51,12 +51,12 @@ Within these directories, you will find:
 ### Generating Data
 If you wish to regenerate the data or apply preprocessing to a new dataset, execute the following scripts:
 
-# Generates data with concurrent purchase considerations and stores it in data/BERT_ConcurrentPurchases
+##### Generates data with concurrent purchase considerations and stores it in data/BERT_ConcurrentPurchases
 ```bash
 python scripts/BERT-RecSysWithConcurrentDataPreparation.py
 ```
 
-# Generates data without concurrent purchase considerations and stores it in data/BERT_SinglePurchases
+##### Generates data without concurrent purchase considerations and stores it in data/BERT_SinglePurchases
 ```bash
 python scripts/BERT-RecSysWithoutConcurrentDataPreparation.py
 ```
