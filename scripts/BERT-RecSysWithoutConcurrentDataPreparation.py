@@ -3,26 +3,32 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import GroupShuffleSplit
 from transformers import BertTokenizer
-from BERT_RecSysWithConcurrentDataPreparation import split_user_data, format_next_purchase, get_longer_text, add_text_if_fits, compile_order_history, generate_dataset
+from BERT_RecSysWithConcurrentDataPreparation import split_user_data, format_next_purchase, get_longer_text, add_text_if_fits, generate_dataset
 
 # Initialize tokenizer globally to be used in the compile_order_history function
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-def compile_order_history(user_prompt, item_max):
+def compile_order_history(user_prompt, tokenizer, item_max):
     """
     Compile order history without considering concurrent purchases.
     """
-    user_text = '## order history'
+    user_text = "## order history"
     user_prompt = user_prompt.groupby('InvoiceDate')
-
+    
     for date, group in user_prompt:
-        user_text += f'\nOrder details for {date}: '
-        for des in group['Description']:
-            if len(tokenizer(item_max, user_text + des + ', ', padding=True, truncation=False).input_ids) < 512:
-                user_text += (des + ', ')
+        # Add order details for each date
+        date_text = f'\nOrder details for {date}: '
+        user_text = add_text_if_fits(user_text, date_text, tokenizer, item_max)
+        if not user_text: return user_text  # Return current text if limit exceeded
+        
+        for description in group['Description']:
+            description_text = description + ', '
+            new_user_text = add_text_if_fits(user_text, description_text, tokenizer, item_max)
+            if not new_user_text:
+                return user_text  # Return the current text if limit exceeded
             else:
-                return user_text
-
+                user_text = new_user_text  # Update the text with the new addition
+                
     return user_text
 
 # Data directory for concurrent purchases
