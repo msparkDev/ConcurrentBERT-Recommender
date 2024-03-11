@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import GroupShuffleSplit
 from transformers import BertTokenizer
-from BERT_RecSysWithConcurrentDataPreparation import split_user_data, format_next_purchase, get_longer_text, generate_dataset
+from BERT_RecSysWithConcurrentDataPreparation import split_user_data, format_next_purchase, get_longer_text, add_text_if_fits, compile_order_history, generate_dataset
 
 # Initialize tokenizer globally to be used in the compile_order_history function
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
