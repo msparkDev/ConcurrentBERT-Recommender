@@ -3,66 +3,9 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import GroupShuffleSplit
 from transformers import BertTokenizer
-from ucimlrepo import fetch_ucirepo
+from BERT-RecSysWithConcurrentDataPreparation import split_user_data, format_next_purchase, get_longer_text, generate_dataset
 
 # Define functions for data preprocessing and negative sampling.
-
-def negative_sampling(df, unique_product_ids, user_id, N):
-    """
-    Performs negative sampling by selecting N unique product IDs not previously purchased by a given user.
-    """
-    purchased_product_ids = set(df[df['CustomerID'] == user_id]['CustomerID'])
-    negative_product_ids = unique_product_ids - purchased_product_ids
-    sampled_product_ids = np.random.choice(list(negative_product_ids), N, replace=False)
-    return sampled_product_ids
-
-def create_negative_samples_dataframe(df, unique_user_ids, unique_product_ids, N):
-    """
-    Creates a DataFrame for negative samples by applying negative sampling for each unique user.
-    """
-    negative_samples = []
-    for user_id in unique_user_ids:
-        sampled_product_ids = negative_sampling(df, unique_product_ids, user_id, N)
-        user_negative_samples = [{'CustomerID': user_id, 'Description': pid} for pid in sampled_product_ids]
-        negative_samples.extend(user_negative_samples)
-    negative_product_id_df = pd.DataFrame(negative_samples)
-    return negative_product_id_df
-
-def split_user_data(group_data):
-    """
-    Splits user purchase history into a sequence of previous purchases and the most recent purchase.
-    """
-    user_prompt = group_data.iloc[:-1].sort_values(by='InvoiceDate')
-    user_positive = group_data.iloc[-1]
-    return user_prompt, user_positive
-
-def format_next_purchase(user_text):
-    """
-    Formats the prediction text for the next purchase, ensuring compatibility with model input.
-    """
-    try:
-        item_description = user_text.Description.iloc[0]
-    except (IndexError, AttributeError):
-        item_description = user_text.Description
-    item_text = f'## next purchase prediction\n{item_description}'
-    return item_text
-
-def get_longer_text(text_1, text_2):
-    """
-    Compares two texts and returns the longer one based on token count.
-    """
-    text_max = text_1 if len(tokenizer(text_1, padding=True, truncation=False).input_ids) > len(tokenizer(text_2, padding=True, truncation=False).input_ids) else text_2
-    return text_max
-
-def add_text_if_fits(current_text, addition, tokenizer, item_max):
-    """
-    Adds an additional text to the current text if it does not exceed the token limit.
-    """
-    new_text = current_text + addition
-    if len(tokenizer(new_text, item_max, padding=True, truncation=False).input_ids) < 512:
-        return new_text
-    else:
-        return None
 
 def compile_order_history(user_prompt, tokenizer, item_max):
     """
