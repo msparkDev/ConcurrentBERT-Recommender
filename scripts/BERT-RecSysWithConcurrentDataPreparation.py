@@ -37,35 +37,45 @@ def add_text_if_fits(current_text, addition, tokenizer, item_max):
         return None  # Return None if the limit is exceeded
 
 def compile_order_history(user_prompt, tokenizer, item_max):
-    """Compile order history into a formatted string."""
+    # Initialize the order history text with a heading.
     user_text = "## order history"
+    # Group the input data by invoice date to compile orders day by day.
     user_prompt = user_prompt.groupby('InvoiceDate')
     
     for date, group in user_prompt:
-        # Add order details for each date
+        # For each date, start compiling order details.
         date_text = f'\nOrder details for {date}'
-        user_text = add_text_if_fits(user_text, date_text, tokenizer, item_max)
-        if not user_text: return user_text  # Return current text if limit exceeded
+        # Attempt to add the date text, checking if it fits within the token limit.
+        new_user_text = add_text_if_fits(user_text, date_text, tokenizer, item_max)
+        if not new_user_text:  # If adding the text would exceed the token limit,
+            return user_text  # return the current state of the compiled text.
+        else:
+            user_text = new_user_text  # Otherwise, update the compiled text.
         
-        # Add concurrent purchase marker
+        # If there are multiple items in an order, add a concurrent purchase marker.
         if len(group) > 1:
             concurrent_purchase_text = ' [Concurrent Purchase]'
-            user_text = add_text_if_fits(user_text, concurrent_purchase_text, tokenizer, item_max)
-            if not user_text: return user_text  # Return current text if limit exceeded
+            new_user_text = add_text_if_fits(user_text, concurrent_purchase_text, tokenizer, item_max)
+            if not new_user_text:  # Check again for token limit exceedance.
+                return user_text
+            else:
+                user_text = new_user_text
         
-        # Add a colon to separate the order details
+        # Separate the order details with a colon.
         user_text = add_text_if_fits(user_text, ': ', tokenizer, item_max)
-        if not user_text: return user_text  # Return current text if limit exceeded
+        if not user_text: return user_text  # Check for token limit before adding descriptions.
         
+        # For each item description in the order,
         for description in group['Description']:
             description_text = description + ', '
+            # Attempt to add item descriptions, checking each time for token limits.
             new_user_text = add_text_if_fits(user_text, description_text, tokenizer, item_max)
-            if not new_user_text:
-                return user_text  # Return the current text if limit exceeded
+            if not new_user_text:  # If limit exceeded,
+                return user_text  # return the text as-is.
             else:
-                user_text = new_user_text  # Update the text with the new addition
+                user_text = new_user_text  # Otherwise, update with the new item.
                 
-    return user_text
+    return user_text  # Return the fully compiled order history text.
 
 def negative_sampling(df, unique_product_ids, user_id, N):
     """Perform negative sampling for a given user."""
