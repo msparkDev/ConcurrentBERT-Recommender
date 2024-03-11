@@ -23,20 +23,48 @@ def get_longer_text(text_1, text_2):
     text_max = text_1 if len(tokenizer(text_1, padding=True, truncation=False).input_ids) > len(tokenizer(text_2, padding=True, truncation=False).input_ids) else text_2
     return text_max
 
-def compile_order_history(user_prompt, item_max):
+def add_text_if_fits(current_text, addition, tokenizer, item_max):
+    """
+    Adds additional text to the given text and checks if the result fits within the token limit.
+    If it does not exceed the limit, it appends the additional text to the current text;
+    if it exceeds, it returns None.
+    """
+    # Calculate the number of tokens for the combined current and additional text using the tokenizer
+    new_text = current_text + addition
+    if len(tokenizer(new_text, padding=True, truncation=False).input_ids) < 512:
+        return new_text  # Return the updated text if within the limit
+    else:
+        return None  # Return None if the limit is exceeded
+
+def compile_order_history(user_prompt, tokenizer, item_max):
     """Compile order history into a formatted string."""
-    user_text = f'## order history'
+    user_text = "## order history"
     user_prompt = user_prompt.groupby('InvoiceDate')
+    
     for date, group in user_prompt:
-        user_text += f'\nOrder details for {date}'
+        # Add order details for each date
+        date_text = f'\nOrder details for {date}'
+        user_text = add_text_if_fits(user_text, date_text, tokenizer, item_max)
+        if not user_text: return user_text  # Return current text if limit exceeded
+        
+        # Add concurrent purchase marker
         if len(group) > 1:
-            user_text += ' [Concurrent Purchase]'
-        user_text += ': '
-        for des in group['Description']:
-            if len(tokenizer(item_max, user_text + des + ', ', item_max, padding=True, truncation=False).input_ids) < 512:
-                user_text += (des + ', ')
+            concurrent_purchase_text = ' [Concurrent Purchase]'
+            user_text = add_text_if_fits(user_text, concurrent_purchase_text, tokenizer, item_max)
+            if not user_text: return user_text  # Return current text if limit exceeded
+        
+        # Add a colon to separate the order details
+        user_text = add_text_if_fits(user_text, ': ', tokenizer, item_max)
+        if not user_text: return user_text  # Return current text if limit exceeded
+        
+        for description in group['Description']:
+            description_text = description + ', '
+            new_user_text = add_text_if_fits(user_text, description_text, tokenizer, item_max)
+            if not new_user_text:
+                return user_text  # Return the current text if limit exceeded
             else:
-                return user_text
+                user_text = new_user_text  # Update the text with the new addition
+                
     return user_text
 
 def negative_sampling(df, unique_product_ids, user_id, N):
@@ -74,7 +102,7 @@ def generate_dataset(group_keys, grouped_data, negative_data, mode):
             labels.append(0)
             
             item_max = get_longer_text(item_pos, item_neg)
-            user_text = compile_order_history(user_prompt, item_max)
+            user_text = compile_order_history(user_prompt, tokenizer, item_max)
             
             for i in range(2):
                 sentence_prev.append(user_text)
@@ -88,7 +116,7 @@ def generate_dataset(group_keys, grouped_data, negative_data, mode):
                 
                 item_max = get_longer_text(item_max, item_neg)
                 
-            user_text = compile_order_history(user_prompt, item_max)
+            user_text = compile_order_history(user_prompt, tokenizer, item_max)
             
             for i in range(50):
                 sentence_prev.append(user_text)
