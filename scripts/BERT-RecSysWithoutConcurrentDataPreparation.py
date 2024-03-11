@@ -7,7 +7,7 @@ from BERT-RecSysWithConcurrentDataPreparation import (
     split_user_data, format_next_purchase, get_longer_text,
     add_text_if_fits, generate_dataset, process_dataset)
 
-# Define functions for data preprocessing and negative sampling
+# Define functions for data preprocessing
 
 def compile_order_history(user_prompt, tokenizer, item_max):
     """
