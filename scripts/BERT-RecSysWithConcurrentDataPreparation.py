@@ -76,6 +76,49 @@ def compile_order_history(user_prompt, tokenizer, item_max):
             return user_text
     return user_text
 
+# Generates the dataset for BERT model training, validation, or testing.
+def generate_dataset(group_keys, grouped_data, negative_data, mode):
+    sentence_prev = []
+    sentence_next = []
+    labels = []
+    
+    for key in group_keys:
+        group_data = grouped_data.get_group(key).copy()
+        user_prompt, user_positive = split_user_data(group_data)
+        user_negative = negative_data[negative_data.CustomerID == key]
+        
+        item_pos = format_next_purchase(user_positive)
+        sentence_next.append(item_pos)
+        labels.append(1)
+        
+        if mode in ["train", "validation"]:
+            item_neg = format_next_purchase(user_negative)
+            sentence_next.append(item_neg)
+            labels.append(0)
+            
+            item_max = get_longer_text(item_pos, item_neg)
+            
+            user_text = compile_order_history(user_prompt, tokenizer, item_max)
+            
+            for i in range(2):
+                sentence_prev.append(user_text)
+        elif mode == "test":
+            item_max = item_pos
+            
+            for i, (index, neg) in enumerate(user_negative.iterrows()):
+                item_neg = format_next_purchase(neg)
+                sentence_next.append(item_neg)
+                labels.append(0)
+                
+                item_max = get_longer_text(item_max, item_neg)
+                
+            user_text = compile_order_history(user_prompt, tokenizer, item_max)
+            
+            for i in range(len(user_negative)):
+                sentence_prev.append(user_text)
+                
+    return sentence_prev, sentence_next, labels
+
 # Main Data Processing
 
 # Fetch and preprocess data
