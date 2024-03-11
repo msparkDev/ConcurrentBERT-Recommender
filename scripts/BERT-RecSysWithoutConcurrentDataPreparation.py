@@ -9,28 +9,25 @@ from BERT_RecSysWithConcurrentDataPreparation import split_user_data, format_nex
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 def compile_order_history(user_prompt, tokenizer, item_max):
-    """
-    Compile order history without considering concurrent purchases.
-    """
+    # Initialize the order history text with a heading.
     user_text = "## order history"
+    # Group the input data by invoice date to organize orders chronologically.
     user_prompt = user_prompt.groupby('InvoiceDate')
     
     for date, group in user_prompt:
-        # Add order details for each date
-        date_text = f'\nOrder details for {date}: '
-        user_text = add_text_if_fits(user_text, date_text, tokenizer, item_max)
-        if not user_text: return user_text  # Return current text if limit exceeded
-        
-        for description in group['Description']:
-            description_text = description + ', '
-            new_user_text = add_text_if_fits(user_text, description_text, tokenizer, item_max)
-            if not new_user_text:
-                return user_text  # Return the current text if limit exceeded
-            else:
-                user_text = new_user_text  # Update the text with the new addition
+        # Loop through each item in the group
+        for _, item in group.iterrows():
+            # Compile order details for each item including the date.
+            item_details_text = f'\nOrder details for {date}: {item["Description"]}, '
+            # Check if adding this text exceeds the token limit.
+            new_user_text = add_text_if_fits(user_text, item_details_text, tokenizer, item_max)
+            if new_user_text is not None:  # If it doesn't exceed, update the text.
+                user_text = new_user_text
+            else:  # If it does, return the current compilation.
+                return user_text
                 
-    return user_text
-
+    return user_text  # Finally, return the compiled order history text.
+    
 # Data directory for concurrent purchases
 data_dir_concurrent = "data/BERT_ConcurrentPurchases"
 
