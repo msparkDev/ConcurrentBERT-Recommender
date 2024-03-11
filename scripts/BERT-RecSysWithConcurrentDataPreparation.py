@@ -5,18 +5,21 @@ from sklearn.model_selection import GroupShuffleSplit
 from transformers import BertTokenizer
 from ucimlrepo import fetch_ucirepo
 
-# Function Definitions
+# Define functions for data preprocessing and negative sampling.
 
-# Define a function to perform something similar to negative sampling for each user_id,
-# sampling N product_ids not purchased by the user from the set of unique product_ids.
 def negative_sampling(df, unique_product_ids, user_id, N):
+    """
+    Performs negative sampling by selecting N unique product IDs not previously purchased by a given user.
+    """
     purchased_product_ids = set(df[df['CustomerID'] == user_id]['CustomerID'])
     negative_product_ids = unique_product_ids - purchased_product_ids
     sampled_product_ids = np.random.choice(list(negative_product_ids), N, replace=False)
     return sampled_product_ids
 
-# Adjusted function to create a DataFrame of negative samples.
 def create_negative_samples_dataframe(df, unique_user_ids, unique_product_ids, N):
+    """
+    Creates a DataFrame for negative samples by applying negative sampling for each unique user.
+    """
     negative_samples = []
     for user_id in unique_user_ids:
         sampled_product_ids = negative_sampling(df, unique_product_ids, user_id, N)
@@ -25,38 +28,46 @@ def create_negative_samples_dataframe(df, unique_user_ids, unique_product_ids, N
     negative_product_id_df = pd.DataFrame(negative_samples)
     return negative_product_id_df
 
-# Splits user data into prompts and positive examples.
 def split_user_data(group_data):
+    """
+    Splits user purchase history into a sequence of previous purchases and the most recent purchase.
+    """
     user_prompt = group_data.iloc[:-1].sort_values(by='InvoiceDate')
     user_positive = group_data.iloc[-1]
     return user_prompt, user_positive
 
-# Formats the next purchase prediction, ensuring correct string output.
 def format_next_purchase(user_text):
+    """
+    Formats the prediction text for the next purchase, ensuring compatibility with model input.
+    """
     try:
         item_description = user_text.Description.iloc[0]
-    except IndexError:
-        item_description = user_text.Description
-    except AttributeError:
+    except (IndexError, AttributeError):
         item_description = user_text.Description
     item_text = f'## next purchase prediction\n{item_description}'
     return item_text
 
-# Determines the longer text between two given texts based on token count.
 def get_longer_text(text_1, text_2):
+    """
+    Compares two texts and returns the longer one based on token count.
+    """
     text_max = text_1 if len(tokenizer(text_1, padding=True, truncation=False).input_ids) > len(tokenizer(text_2, padding=True, truncation=False).input_ids) else text_2
     return text_max
 
-# Attempts to add additional text to the given text without exceeding the token limit.
 def add_text_if_fits(current_text, addition, tokenizer, item_max):
+    """
+    Adds an additional text to the current text if it does not exceed the token limit.
+    """
     new_text = current_text + addition
     if len(tokenizer(new_text, item_max, padding=True, truncation=False).input_ids) < 512:
         return new_text
     else:
         return None
 
-# Compiles order history by grouping input data by invoice date and organizing orders chronologically.
 def compile_order_history(user_prompt, tokenizer, item_max):
+    """
+    Compiles a user's order history into a coherent text, respecting the token limit.
+    """
     user_text = "## order history"
     user_prompt['InvoiceDate'] = pd.to_datetime(user_prompt['InvoiceDate'], format='%m/%d/%Y %H:%M')
     user_prompt = user_prompt.sort_values('InvoiceDate', ascending=False)
@@ -76,8 +87,10 @@ def compile_order_history(user_prompt, tokenizer, item_max):
             return user_text
     return user_text
 
-# Generates the dataset for BERT model training, validation, or testing.
 def generate_dataset(group_keys, grouped_data, negative_data, mode):
+    """
+    Generates the dataset for model training, validation, or testing by creating sequences from user purchase history.
+    """
     sentence_prev = []
     sentence_next = []
     labels = []
@@ -97,75 +110,52 @@ def generate_dataset(group_keys, grouped_data, negative_data, mode):
             labels.append(0)
             
             item_max = get_longer_text(item_pos, item_neg)
-            
             user_text = compile_order_history(user_prompt, tokenizer, item_max)
-            
             for i in range(2):
                 sentence_prev.append(user_text)
-                
         elif mode == "test":
             item_max = item_pos
-            
             for i, (index, neg) in enumerate(user_negative.iterrows()):
                 item_neg = format_next_purchase(neg)
                 sentence_next.append(item_neg)
                 labels.append(0)
-                
                 item_max = get_longer_text(item_max, item_neg)
-            
             user_text = compile_order_history(user_prompt, tokenizer, item_max)
-            
             for i in range(len(user_negative)):
                 sentence_prev.append(user_text)
-                
     return sentence_prev, sentence_next, labels
 
 def prepare_negative_samples(data, unique_user_ids, N, mode='train'):
-    # Generate unique product IDs from the data
+    """
+    Prepares negative samples for the dataset by generating non-purchased product IDs for each user.
+    """
     unique_product_ids = set(data['Description'].unique())
-    
-    # Create negative samples dataframe
     negative_product_id_df = create_negative_samples_dataframe(data, unique_user_ids, unique_product_ids, N)
-    
-    # Merge negative samples with product descriptions from the last purchase
     xx = data.groupby('Description', as_index=False).last()
-    negative_samples_merged = pd.merge(negative_product_id_df, xx, on='Description', how='left')
-    negative_samples_merged.drop(['CustomerID_y'], axis=1, inplace=True)
+    negative_samples_merged = pd.merge(negative_product_id_df, xx, on='Description', how='left').drop(['CustomerID_y'], axis=1)
     negative_samples_merged.rename(columns={'CustomerID_x': 'CustomerID'}, inplace=True)
-    
     return negative_samples_merged
 
 def process_dataset(data, grouped_data, negative_data, mode):
-    # Get the unique keys for groups, which are CustomerID in this context.
+    """
+    Processes the dataset for the given mode (train, validation, test) by generating text sequences and labels.
+    """
     group_keys = grouped_data.groups.keys()
-    # Generate sequences for training, validation, or testing.
     sentence_prev, sentence_next, labels = generate_dataset(group_keys, grouped_data, negative_data, mode)
-    
-    # Create a DataFrame from the generated sequences and labels.
-    df = pd.DataFrame({
-        'prev': sentence_prev,
-        'next': sentence_next,
-        'label': labels
-    })
-    
-    # Remove sequences that only contain the order history header.
+    df = pd.DataFrame({'prev': sentence_prev, 'next': sentence_next, 'label': labels})
     df = df[df.prev != '## order history']
-    
     return df
 
-# Main Data Processing
+# Main Data Processing Flow
 
-# Fetch and preprocess data
-data = fetch_ucirepo(id=352)
-data = data.data.features
+# Fetch and preprocess data from UCI ML repository
+data = fetch_ucirepo(id=352).data.features
 
-# Filter out users with only one purchase
+# Remove users with only one purchase
 data['total_order_cnt'] = data.groupby('CustomerID')['Description'].transform('count')
-data = data[data['total_order_cnt'] > 1]
-data.drop(['total_order_cnt'], axis=1, inplace=True)
-data.reset_index(drop=True, inplace=True)
+data = data[data['total_order_cnt'] > 1].drop(['total_order_cnt'], axis=1).reset_index(drop=True)
 
-# Split data into train, validation, and test sets
+# Split dataset into training, validation, and test sets
 gss = GroupShuffleSplit(n_splits=1, train_size=0.8, random_state=42)
 train_val_idx, test_idx = next(gss.split(data, groups=data['CustomerID']))
 train_val_data = data.iloc[train_val_idx]
@@ -176,36 +166,33 @@ train_idx, val_idx = next(gss.split(train_val_data, groups=train_val_data['Custo
 train_data = train_val_data.iloc[train_idx]
 validation_data = train_val_data.iloc[val_idx]
 
-# Ensure data directory exists and save data splits
+# Ensure the data directory exists
 data_dir = "data/BERT_ConcurrentPurchases"
-if not os.path.exists(data_dir):
-    os.makedirs(data_dir)
+os.makedirs(data_dir, exist_ok=True)
+
+# Save the split data
 train_data.to_csv(os.path.join(data_dir, 'train_data.csv'), index=False)
 validation_data.to_csv(os.path.join(data_dir, 'validation_data.csv'), index=False)
 test_data.to_csv(os.path.join(data_dir, 'test_data.csv'), index=False)
 
-# Apply the function to training, validation, and testing datasets
+# Prepare negative samples for each dataset part
 negative_train = prepare_negative_samples(train_data, train_data['CustomerID'].unique(), N=1)
 negative_val = prepare_negative_samples(validation_data, validation_data['CustomerID'].unique(), N=1)
-negative_test = prepare_negative_samples(test_data, test_data['CustomerID'].unique(), N=49 if mode == "test" else 1)
+negative_test = prepare_negative_samples(test_data, test_data['CustomerID'].unique(), N=49)
 
-# Export negative sample DataFrames to CSV files
-# Saves the negative samples for training, validation, and test sets to the specified directory
+# Save negative samples to files
 negative_train.to_csv(os.path.join(data_dir, 'negative_train.csv'), index=False)
 negative_val.to_csv(os.path.join(data_dir, 'negative_val.csv'), index=False)
 negative_test.to_csv(os.path.join(data_dir, 'negative_test.csv'), index=False)
 
-# Prepare data for BERT model
-# Tokenizes and formats data for input into BERT model, generating sequences of user's purchase history and next product prediction
+# Initialize the tokenizer
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-# Execute dataset processing
-train = process_dataset(train_data, grouped_train, negative_train, "train")
-val = process_dataset(validation_data, grouped_val, negative_val, "validation")
-test = process_dataset(test_data, grouped_test, negative_test, "test")
+# Process and save the datasets for training, validation, and testing
+train_df = process_dataset(train_data, train_data.groupby('CustomerID'), negative_train, "train")
+val_df = process_dataset(validation_data, validation_data.groupby('CustomerID'), negative_val, "validation")
+test_df = process_dataset(test_data, test_data.groupby('CustomerID'), negative_test, "test")
 
-# Save processed datasets to CSV files
-# Outputs the final processed datasets for training, validation, and test sets to the specified directory for model training
-train.to_csv(os.path.join(data_dir, 'trainForBERT_WCP.csv'), index=False)
-val.to_csv(os.path.join(data_dir, 'valForBERT_WCP.csv'), index=False)
-test.to_csv(os.path.join(data_dir, 'testForBERT_WCP.csv'), index=False)
+train_df.to_csv(os.path.join(data_dir, 'trainForBERT_WCP.csv'), index=False)
+val_df.to_csv(os.path.join(data_dir, 'valForBERT_WCP.csv'), index=False)
+test_df.to_csv(os.path.join(data_dir, 'testForBERT_WCP.csv'), index=False)
