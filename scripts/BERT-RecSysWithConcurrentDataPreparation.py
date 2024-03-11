@@ -120,6 +120,39 @@ def generate_dataset(group_keys, grouped_data, negative_data, mode):
                 
     return sentence_prev, sentence_next, labels
 
+def prepare_negative_samples(data, unique_user_ids, N, mode='train'):
+    # Generate unique product IDs from the data
+    unique_product_ids = set(data['Description'].unique())
+    
+    # Create negative samples dataframe
+    negative_product_id_df = create_negative_samples_dataframe(data, unique_user_ids, unique_product_ids, N)
+    
+    # Merge negative samples with product descriptions from the last purchase
+    xx = data.groupby('Description', as_index=False).last()
+    negative_samples_merged = pd.merge(negative_product_id_df, xx, on='Description', how='left')
+    negative_samples_merged.drop(['CustomerID_y'], axis=1, inplace=True)
+    negative_samples_merged.rename(columns={'CustomerID_x': 'CustomerID'}, inplace=True)
+    
+    return negative_samples_merged
+
+def process_dataset(data, grouped_data, negative_data, mode):
+    # Get the unique keys for groups, which are CustomerID in this context.
+    group_keys = grouped_data.groups.keys()
+    # Generate sequences for training, validation, or testing.
+    sentence_prev, sentence_next, labels = generate_dataset(group_keys, grouped_data, negative_data, mode)
+    
+    # Create a DataFrame from the generated sequences and labels.
+    df = pd.DataFrame({
+        'prev': sentence_prev,
+        'next': sentence_next,
+        'label': labels
+    })
+    
+    # Remove sequences that only contain the order history header.
+    df = df[df.prev != '## order history']
+    
+    return df
+
 # Main Data Processing
 
 # Fetch and preprocess data
@@ -151,33 +184,10 @@ train_data.to_csv(os.path.join(data_dir, 'train_data.csv'), index=False)
 validation_data.to_csv(os.path.join(data_dir, 'validation_data.csv'), index=False)
 test_data.to_csv(os.path.join(data_dir, 'test_data.csv'), index=False)
 
-# Generate negative sample DataFrame for training data
-# Creates negative samples for each user by selecting products not purchased by them
-unique_user_ids = train_data['CustomerID'].unique()
-unique_product_ids = set(train_data['Description'].unique())
-
-negative_product_id_df = create_negative_samples_dataframe(train_data, unique_user_ids, unique_product_ids, N=1)
-
-# Merge negative samples with last purchase info and clean up columns
-# This step merges the negative samples with product descriptions and adjusts the CustomerID column
-xx = train_data.groupby('Description', as_index=False).last()
-negative_train = pd.merge(negative_product_id_df, xx, on='Description', how='left').drop(['CustomerID_y'], axis=1).rename(columns={'CustomerID_x': 'CustomerID'})
-
-# Repeat negative sampling process for validation data
-# Similar to training data, generates negative samples for validation set
-unique_user_ids = validation_data['CustomerID'].unique()
-unique_product_ids = set(validation_data['Description'].unique())
-negative_product_id_df = create_negative_samples_dataframe(validation_data, unique_user_ids, unique_product_ids, N=1)
-xx = validation_data.groupby('Description', as_index=False).last()
-negative_val = pd.merge(negative_product_id_df, xx, on='Description', how='left').drop(['CustomerID_y'], axis=1).rename(columns={'CustomerID_x': 'CustomerID'})
-
-# Perform negative sampling for test data with increased sample count
-# Generates 49 negative samples for each user in the test set to evaluate model's performance
-unique_user_ids = test_data['CustomerID'].unique()
-unique_product_ids = set(test_data['Description'].unique())
-negative_product_id_df = create_negative_samples_dataframe(test_data, unique_user_ids, unique_product_ids, N=49)
-xx = test_data.groupby('Description', as_index=False).last()
-negative_test = pd.merge(negative_product_id_df, xx, on='Description', how='left').drop(['CustomerID_y'], axis=1).rename(columns={'CustomerID_x': 'CustomerID'})
+# Apply the function to training, validation, and testing datasets
+negative_train = prepare_negative_samples(train_data, train_data['CustomerID'].unique(), N=1)
+negative_val = prepare_negative_samples(validation_data, validation_data['CustomerID'].unique(), N=1)
+negative_test = prepare_negative_samples(test_data, test_data['CustomerID'].unique(), N=49 if mode == "test" else 1)
 
 # Export negative sample DataFrames to CSV files
 # Saves the negative samples for training, validation, and test sets to the specified directory
@@ -189,42 +199,10 @@ negative_test.to_csv(os.path.join(data_dir, 'negative_test.csv'), index=False)
 # Tokenizes and formats data for input into BERT model, generating sequences of user's purchase history and next product prediction
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-# Process training data
-# Groups training data by CustomerID and generates sequences for model training
-grouped_train = train_data.groupby('CustomerID')
-group_keys = grouped_train.groups.keys()
-sentence_prev, sentence_next, labels = generate_dataset(group_keys, grouped_train, negative_train, "train")
-
-# Prepare DataFrame for training data
-train = pd.DataFrame(columns = ['prev', 'next', 'label'])
-train['prev'] = sentence_prev
-train['next'] = sentence_next
-train['label'] = labels
-
-# Process validation data
-# Similar processing for validation data to create input sequences and labels
-grouped_val = validation_data.groupby('CustomerID')
-group_keys = grouped_val.groups.keys()
-sentence_prev, sentence_next, labels = generate_dataset(group_keys, grouped_val, negative_val, "validation")
-val = pd.DataFrame(columns = ['prev', 'next', 'label'])
-val['prev'] = sentence_prev
-val['next'] = sentence_next
-val['label'] = labels
-
-# Process test data
-# Generates sequences for test data, including negative samples for comprehensive evaluation
-grouped_test = test_data.groupby('CustomerID')
-group_keys = grouped_test.groups.keys()
-sentence_prev, sentence_next, labels = generate_dataset(group_keys, grouped_test, negative_test, "test")
-test = pd.DataFrame(columns = ['prev', 'next', 'label'])
-test['prev'] = sentence_prev
-test['next'] = sentence_next
-test['label'] = labels
-
-# Filter out sequences that only contain the order history heading
-train = train[train.prev != '## order history']
-val = val[val.prev != '## order history']
-test = test[test.prev != '## order history']
+# Execute dataset processing
+train = process_dataset(train_data, grouped_train, negative_train, "train")
+val = process_dataset(validation_data, grouped_val, negative_val, "validation")
+test = process_dataset(test_data, grouped_test, negative_test, "test")
 
 # Save processed datasets to CSV files
 # Outputs the final processed datasets for training, validation, and test sets to the specified directory for model training
