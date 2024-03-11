@@ -102,6 +102,7 @@ def generate_dataset(group_keys, grouped_data, negative_data, mode):
             
             for i in range(2):
                 sentence_prev.append(user_text)
+                
         elif mode == "test":
             item_max = item_pos
             
@@ -111,7 +112,7 @@ def generate_dataset(group_keys, grouped_data, negative_data, mode):
                 labels.append(0)
                 
                 item_max = get_longer_text(item_max, item_neg)
-                
+            
             user_text = compile_order_history(user_prompt, tokenizer, item_max)
             
             for i in range(len(user_negative)):
