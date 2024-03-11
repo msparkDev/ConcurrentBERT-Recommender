@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import GroupShuffleSplit
 from transformers import BertTokenizer
-from BERT-RecSysWithConcurrentDataPreparation import split_user_data, format_next_purchase, get_longer_text, generate_dataset
+from BERT-RecSysWithConcurrentDataPreparation import split_user_data, format_next_purchase, get_longer_text, add_text_if_fits, generate_dataset
 
 # Define functions for data preprocessing and negative sampling.
 
