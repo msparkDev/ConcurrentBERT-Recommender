@@ -1,38 +1,64 @@
 # Enhancing E-commerce Recommendation Systems with Concurrent Purchase Data: A Transformer-Based Approach
 
 ## Authors
-Minseo Park, Jangmin Oh*
+- Minseo Park
+- Jangmin Oh*
 
-This project presents a novel approach to improving e-commerce recommendation systems by leveraging concurrent purchase data and transformer-based models. Our work demonstrates significant advancements in predictive accuracy and system efficacy, validated with real-world data.
+This project introduces a novel approach to enhance e-commerce recommendation systems by incorporating concurrent purchase data alongside transformer-based models like BERT. Our methodology demonstrates significant improvements in predictive accuracy and overall system efficacy, as evidenced by extensive validation on real-world data from Katcher's e-commerce platform.
 
 ## Key Contributions
+1. **Integration of Concurrent Purchase Data**: Our approach uniquely integrates concurrent purchase data, offering new insights into consumer behavior patterns.
+2. **Transformer-Based Algorithm**: We employ a transformer-based recommendation algorithm, significantly outperforming traditional models in predicting next-product purchases.
+3. **Real-World Validation**: Rigorous testing on Katchers' data validates our method's effectiveness in enhancing recommendation accuracy.
 
-1. **Integration of Concurrent Purchase Data:** We introduce an innovative method by incorporating concurrent purchase data into e-commerce recommendation systems. This approach allows for a deeper understanding of complex consumer purchasing patterns, significantly enhancing the accuracy of predictions.
+## Dependencies
+To replicate our work or utilize our framework, ensure the installation of the following:
+- Python 3.10 or higher
+- Required libraries and packages, installable via `pip install -r requirements.txt` in your terminal.
 
-2. **Transformer-Based Recommendation Algorithm:** Utilizing the BERT model, we have developed a transformer-based algorithm specifically fine-tuned for predicting the next product a customer is likely to purchase. This method represents a considerable leap forward compared to traditional recommendation systems.
+## Data Privacy and Usage
+Due to proprietary restrictions, the dataset from Katchers' e-commerce platform is not publicly available. However, to facilitate understanding and reproducibility, we utilize the [**Online Retail Dataset**](https://archive.ics.uci.edu/ml/datasets/Online+Retail) from the UCI Machine Learning Repository as a demonstrative proxy.
 
-3. **Validation on Real-World Data:** Our approach has been rigorously tested using data from Katcher's e-commerce platform. The results showcase our method's superior performance in making accurate predictions, thereby establishing a new standard for recommendation system efficacy.
+### Alternative Dataset for Demonstration
+- **Online Retail Dataset**: Contains comprehensive transaction records, making it an ideal candidate for research and development in e-commerce recommendation systems.
 
-## Getting Started
+## Implementation
+Our project repository is structured to guide you through setting up the environment, preprocessing the data, and executing the recommendation models.
 
-### Dependencies
-
-Ensure you have the following installed to use this framework:
-
-- Python 3.10
-- Required Python packages (install using the command below)
-
+### Setup and Installation
+Clone the repository and install dependencies as follows:
 ```bash
+git clone https://github.com/msparkDev/ECommTransformerRecSys.git
+cd ECommTransformerRecSys
 pip install -r requirements.txt
 ```
 
-## Data
+## Data Preparation
+Our framework considers both scenarios: with and without concurrent purchases, for data preprocessing. To facilitate ease of use and immediate experimentation, we have preprocessed the [Online Retail Dataset](https://archive.ics.uci.edu/ml/datasets/Online+Retail) from the UCI Machine Learning Repository following both scenarios. The preprocessed data is readily available in the repository, allowing you to skip manual preprocessing steps and dive directly into exploring the recommendation models.
 
-### Note on Data Privacy
-The dataset used in this project is proprietary to Katcher's and, as such, cannot be made publicly available. We prioritize the privacy and confidentiality of this data.
+### Preprocessed Data Availability
+The preprocessed datasets are stored within the repository, under the following structure:
+- For data considering concurrent purchases: `data/BERT_ConcurrentPurchases`
+- For data not considering concurrent purchases: `data/BERT_SinglePurchases`
 
-### Alternative Dataset for Demonstration
+Within these directories, you will find:
+- `train_data.csv`, `validation_data.csv`, `test_data.csv`: Splits of the raw data into training, validation, and testing sets.
+- `negative_train.csv`, `negative_val.csv`, `negative_test.csv`: Negative samples for each set, generated through negative sampling.
+- Final datasets for BERT inputs:
+  - `trainForBERT_WCP.csv`, `valForBERT_WCP.csv`, `testForBERT_WCP.csv` for scenarios with concurrent purchases.
+  - `trainForBERT_WOCP.csv`, `valForBERT_WOCP.csv`, `testForBERT_WOCP.csv` for scenarios without concurrent purchases.
 
-For demonstration purposes, we use the [Online Retail Dataset](https://archive.ics.uci.edu/ml/datasets/Online+Retail) from the UCI Machine Learning Repository. This open-source dataset helps illustrate our methodologies and the application of our framework:
+### Generating Data
+If you wish to regenerate the data or apply preprocessing to a new dataset, execute the following scripts:
 
-- **Online Retail Dataset:** This dataset contains transaction records from a UK-based online retail platform, covering a period from December 1st, 2010, to December 9th, 2011. It includes various features such as `InvoiceNo`, `StockCode`, `Description`, `Quantity`, `InvoiceDate`, `UnitPrice`, `CustomerID`, and `Country`, making it suitable for e-commerce recommendation system research and development.
+- Generates data with concurrent purchase considerations and stores it in data/BERT_ConcurrentPurchases
+```bash
+python scripts/BERT-RecSysWithConcurrentDataPreparation.py
+```
+
+- Generates data without concurrent purchase considerations and stores it in data/BERT_SinglePurchases
+```bash
+python scripts/BERT-RecSysWithoutConcurrentDataPreparation.py
+```
+
+

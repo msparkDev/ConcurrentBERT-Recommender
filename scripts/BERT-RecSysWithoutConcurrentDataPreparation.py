@@ -1,62 +1,80 @@
 import os
-import pandas as pd
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import GroupShuffleSplit
 from transformers import BertTokenizer
-from BERT_RecSysWithConcurrentDataPreparation import split_user_data, format_next_purchase, get_longer_text, generate_dataset
+from BERT-RecSysWithConcurrentDataPreparation import (
+    split_user_data, format_next_purchase, get_longer_text,
+    add_text_if_fits, generate_dataset, process_dataset)
 
-# Initialize tokenizer globally to be used in the compile_order_history function
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+# Define functions for data preprocessing
 
-def compile_order_history(user_prompt, item_max):
+def compile_order_history(user_prompt, tokenizer, item_max):
     """
-    Compile order history without considering concurrent purchases.
+    Compile order history into a text string.
+    
+    Parameters:
+    - user_prompt: DataFrame containing user's purchase history.
+    - tokenizer: Tokenizer object for encoding the text.
+    - item_max: Maximum number of items to consider.
+    
+    Returns:
+    - A string representing the compiled order history.
     """
-    user_text = '## order history'
-    user_prompt = user_prompt.groupby('InvoiceDate')
-
-    for date, group in user_prompt:
-        user_text += f'\nOrder details for {date}: '
-        for des in group['Description']:
-            if len(tokenizer(item_max, user_text + des + ', ', padding=True, truncation=False).input_ids) < 512:
-                user_text += (des + ', ')
-            else:
-                return user_text
-
+    user_text = "## order history"  # Initialize the order history text with a heading
+    
+    user_prompt['InvoiceDate'] = pd.to_datetime(
+        user_prompt['InvoiceDate'], format='%m/%d/%Y %H:%M')  # Convert 'InvoiceDate' to datetime
+    
+    user_prompt = user_prompt.sort_values(
+        'InvoiceDate', ascending=False)  # Sort data by 'InvoiceDate' to prioritize recent orders
+    
+    for _, row in user_prompt.iterrows():  # Compile individual purchase details
+        detail = f"\nOrder on {row['InvoiceDate'].strftime('%m/%d/%Y %H:%M')}: {row['Description']},"
+        new_user_text = add_text_if_fits(user_text, detail, tokenizer, item_max)
+        if new_user_text is not None:
+            user_text = new_user_text
+        else:
+            return user_text
     return user_text
 
-# Data directory for concurrent purchases
-data_dir_concurrent = "data/BERT_ConcurrentPurchases"
+# Main data processing flow
 
-# Load data for concurrent purchases
-train_data = pd.read_csv(os.path.join(data_dir_concurrent, 'train_data.csv'))
-val_data = pd.read_csv(os.path.join(data_dir_concurrent, 'validation_data.csv'))
-test_data = pd.read_csv(os.path.join(data_dir_concurrent, 'test_data.csv'))
+data_dir = "data/BERT_ConcurrentPurchases"  # Directory for the concurrent purchase datasets
 
-# Load negative samples
-negative_train = pd.read_csv(os.path.join(data_dir_concurrent, 'negative_train.csv'))
-negative_val = pd.read_csv(os.path.join(data_dir_concurrent, 'negative_val.csv'))
-negative_test = pd.read_csv(os.path.join(data_dir_concurrent, 'negative_test.csv'))
+# Construct file paths for the datasets
+train_data_path = os.path.join(data_dir, 'train_data.csv')
+val_data_path = os.path.join(data_dir, 'validation_data.csv')
+test_data_path = os.path.join(data_dir, 'test_data.csv')
 
-# Group the data by CustomerID for processing
-grouped_train = train_data.groupby('CustomerID')
-grouped_val = val_data.groupby('CustomerID')
-grouped_test = test_data.groupby('CustomerID')
+# Read datasets into pandas DataFrames
+train_data = pd.read_csv(train_data_path)
+val_data = pd.read_csv(val_data_path)
+test_data = pd.read_csv(test_data_path)
 
-# Data directory for datasets without considering concurrent purchases
-data_dir_no_concurrent = "data/BERT_SinglePurchases"
-os.makedirs(data_dir_no_concurrent, exist_ok=True)
+# Construct file paths for the negative sample datasets
+negative_train_path = os.path.join(data_dir, 'negative_train.csv')
+negative_val_path = os.path.join(data_dir, 'negative_val.csv')
+negative_test_path = os.path.join(data_dir, 'negative_test.csv')
 
-# Generate and save datasets
-for mode, dataset, grouped_data in [("train", train_data, grouped_train),
-                                     ("validation", val_data, grouped_val),
-                                     ("test", test_data, grouped_test)]:
-    group_keys = grouped_data.groups.keys()
-    sentence_prev, sentence_next, labels = generate_dataset(group_keys, grouped_data,
-                                                            negative_train if mode == "train" else (
-                                                            negative_val if mode == "validation" else negative_test),
-                                                            mode)
+# Read negative sample datasets into pandas DataFrames
+negative_train = pd.read_csv(negative_train_path)
+negative_val = pd.read_csv(negative_val_path)
+negative_test = pd.read_csv(negative_test_path)
 
-    df = pd.DataFrame({'prev': sentence_prev, 'next': sentence_next, 'label': labels})
-    # Save the datasets without considering concurrent purchases in the correct directory
-    df.to_csv(os.path.join(data_dir_no_concurrent, f'{mode}ForBERT_WOCP.csv'), index=False)
+# Initialize the tokenizer
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+# Process and save the datasets for training, validation, and testing
+train_df = process_dataset(train_data, train_data.groupby('CustomerID'), negative_train, "train")
+val_df = process_dataset(val_data, val_data.groupby('CustomerID'), negative_val, "validation")
+test_df = process_dataset(test_data, test_data.groupby('CustomerID'), negative_test, "test")
+
+new_data_dir = "data/BERT_SinglePurchases"  # Directory for single purchase datasets
+
+os.makedirs(new_data_dir, exist_ok=True)  # Ensure the directory exists; create it if it doesn't
+
+# Save the processed datasets to the new directory
+train_df.to_csv(os.path.join(new_data_dir, 'trainForBERT_WOCP.csv'), index=False)
+val_df.to_csv(os.path.join(new_data_dir, 'valForBERT_WOCP.csv'), index=False)
+test_df.to_csv(os.path.join(new_data_dir, 'testForBERT_WOCP.csv'), index=False)
