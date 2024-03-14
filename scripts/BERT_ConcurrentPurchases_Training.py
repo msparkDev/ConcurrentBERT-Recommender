@@ -57,10 +57,18 @@ training_args = TrainingArguments(
     evaluation_strategy="epoch",
     logging_dir="./logs",
     load_best_model_at_end=True,
+<<<<<<< HEAD
     save_strategy="epoch",
+=======
+    save_strategy="epoch",  
+>>>>>>> 483a1cadc622a1bc629429d711832dd12e1a0f54
     push_to_hub=True,
 )
 
 # Initialize and run the trainer
 trainer = initialize_trainer(model, tokenized_datasets["train"], tokenized_datasets["validation"], tokenizer, training_args)
+<<<<<<< HEAD
 trainer.train()  # Starts the training process
+=======
+trainer.train()  # Starts the training process
+>>>>>>> 483a1cadc622a1bc629429d711832dd12e1a0f54
