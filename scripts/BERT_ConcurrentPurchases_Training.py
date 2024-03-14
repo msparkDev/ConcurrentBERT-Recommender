@@ -48,27 +48,28 @@ tokenized_datasets = load_and_tokenize_data(tokenizer, file_paths)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = BertForNextSentencePrediction.from_pretrained(model_ckpt, num_labels=2).to(device)
 
+batch_size = 32
+logging_steps = 32 # batch_size
 training_args = TrainingArguments(
-    output_dir="YourUsername/ConcurrentPurchasesBERT-UCIRetailTuned",  # Hugging Face Hub 사용자 이름으로 변경
+    output_dir="YourUsernameHere/ConcurrentPurchasesBERT-UCIRetailTuned",  # Change "YourUsernameHere" to your Hugging Face username.
     num_train_epochs=3,
     learning_rate=2e-5,
-    auto_find_batch_size=True,
+    auto_find_batch_size = True,
     weight_decay=0.01,
     evaluation_strategy="epoch",
-    logging_dir="./logs",
-    load_best_model_at_end=True,
-<<<<<<< HEAD
-    save_strategy="epoch",
-=======
-    save_strategy="epoch",  
->>>>>>> 483a1cadc622a1bc629429d711832dd12e1a0f54
+    disable_tqdm=False,
+    logging_steps=logging_steps,
     push_to_hub=True,
+    save_strategy="epoch",
+    load_best_model_at_end=True,
+    log_level="error"
 )
 
 # Initialize and run the trainer
 trainer = initialize_trainer(model, tokenized_datasets["train"], tokenized_datasets["validation"], tokenizer, training_args)
-<<<<<<< HEAD
 trainer.train()  # Starts the training process
-=======
-trainer.train()  # Starts the training process
->>>>>>> 483a1cadc622a1bc629429d711832dd12e1a0f54
+
+# Push the trained model to the Hugging Face Hub
+trainer.push_to_hub(commit_message="Training completed!")  # Commits the model to the Hugging Face Hub
+
+

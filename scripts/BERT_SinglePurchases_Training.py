@@ -23,16 +23,21 @@ tokenized_datasets = load_and_tokenize_data(tokenizer, file_paths)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = BertForNextSentencePrediction.from_pretrained(model_ckpt, num_labels=2).to(device)
 
+batch_size = 32
+logging_steps = 32 # batch_size
 training_args = TrainingArguments(
-    output_dir="YourUsernameHere/SinglePurchasesBERT-UCIRetailTuned",  # Change "YourUsernameHere" to your Hugging Face username.
+    output_dir="YourUsernameHere/ConcurrentPurchasesBERT-UCIRetailTuned",  # Change "YourUsernameHere" to your Hugging Face username.
     num_train_epochs=3,
     learning_rate=2e-5,
-    per_device_train_batch_size=8,
-    per_device_eval_batch_size=8,
+    auto_find_batch_size = True,
     weight_decay=0.01,
     evaluation_strategy="epoch",
-    logging_dir="./logs",
+    disable_tqdm=False,
+    logging_steps=logging_steps,
     push_to_hub=True,
+    save_strategy="epoch",
+    load_best_model_at_end=True,
+    log_level="error"
 )
 
 # Initialize and run the trainer
