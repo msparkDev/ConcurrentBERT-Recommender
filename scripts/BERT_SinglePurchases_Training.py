@@ -10,8 +10,8 @@ from BERT_ConcurrentPurchases_Training import tokenize_function, compute_metrics
 notebook_login()  # Authenticates the user for Hugging Face Hub
 
 file_paths = {
-    "train": 'data/BERT_SinglePurchases/trainForBERT_WCP.csv',
-    "val": 'data/BERT_SinglePurchases/valForBERT_WCP.csv'
+    "train": 'data/BERT_SinglePurchases/trainForBERT_WOCP.csv',
+    "val": 'data/BERT_SinglePurchases/valForBERT_WOCP.csv'
 }
 
 model_ckpt = 'bert-base-uncased'
