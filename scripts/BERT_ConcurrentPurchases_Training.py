@@ -1,9 +1,7 @@
-import gc
 import torch
 from datasets import Dataset, load_dataset
 from transformers import BertTokenizer, BertForNextSentencePrediction, Trainer, TrainingArguments
 from sklearn.metrics import accuracy_score, f1_score
-from huggingface_hub import notebook_login
 
 # Tokenizes the batch for BERT input
 def tokenize_function(examples):
@@ -36,9 +34,6 @@ def initialize_trainer(model, train_dataset, eval_dataset, tokenizer, training_a
     )
     return trainer
 
-# Main execution flow
-notebook_login()  # Authenticates the user for Hugging Face Hub
-
 file_paths = {
     "train": 'data/BERT_ConcurrentPurchases/trainForBERT_WCP.csv',
     "val": 'data/BERT_ConcurrentPurchases/valForBERT_WCP.csv'
@@ -54,7 +49,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = BertForNextSentencePrediction.from_pretrained(model_ckpt, num_labels=2).to(device)
 
 training_args = TrainingArguments(
-    output_dir="Username//ConcurrentPurchasesBERT-UCIRetailTuned",  # Change "YourUsernameHere" to your Hugging Face username.
+    output_dir="YourUsername/ConcurrentPurchasesBERT-UCIRetailTuned",  # Hugging Face Hub 사용자 이름으로 변경
     num_train_epochs=3,
     learning_rate=2e-5,
     auto_find_batch_size=True,
@@ -69,6 +64,3 @@ training_args = TrainingArguments(
 # Initialize and run the trainer
 trainer = initialize_trainer(model, tokenized_datasets["train"], tokenized_datasets["validation"], tokenizer, training_args)
 trainer.train()  # Starts the training process
-
-# Push the trained model to the Hugging Face Hub
-trainer.push_to_hub(commit_message="Training completed!")  # Commits the model to the Hugging Face Hub
