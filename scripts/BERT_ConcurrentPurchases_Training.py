@@ -54,14 +54,15 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = BertForNextSentencePrediction.from_pretrained(model_ckpt, num_labels=2).to(device)
 
 training_args = TrainingArguments(
-    output_dir="YourUsernameHere/ConcurrentPurchasesBERT-UCIRetailTuned",  # Change "YourUsernameHere" to your Hugging Face username.
+    output_dir="Username//ConcurrentPurchasesBERT-UCIRetailTuned",  # Change "YourUsernameHere" to your Hugging Face username.
     num_train_epochs=3,
     learning_rate=2e-5,
-    per_device_train_batch_size=8,
-    per_device_eval_batch_size=8,
+    auto_find_batch_size=True,
     weight_decay=0.01,
     evaluation_strategy="epoch",
     logging_dir="./logs",
+    load_best_model_at_end=True,
+    save_strategy="epoch",  
     push_to_hub=True,
 )
 
