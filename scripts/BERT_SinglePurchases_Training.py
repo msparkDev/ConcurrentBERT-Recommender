@@ -11,7 +11,7 @@ file_paths = {
 }
 
 # Defines the BERT model checkpoint for tokenizer initialization.
-model_ckpt = 'bert-base-uncased'
+model_ckpt = 'google-bert/bert-base-multilingual-cased'
 tokenizer = BertTokenizer.from_pretrained(model_ckpt)
 
 # Loads and tokenizes the dataset using previously defined functions.
