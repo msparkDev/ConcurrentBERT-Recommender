@@ -49,7 +49,7 @@ file_paths = {
 
 # Loads the tokenizer for the specified BERT model checkpoint.
 model_ckpt = 'google-bert/bert-base-multilingual-cased'
-tokenizer = BertTokenizer.from_pretrained(model_ckpt, do_lower=False)
+tokenizer = BertTokenizer.from_pretrained(model_ckpt)
 
 # Loads and tokenizes the dataset using the specified file paths.
 tokenized_datasets = load_and_tokenize_data(tokenizer, file_paths)
