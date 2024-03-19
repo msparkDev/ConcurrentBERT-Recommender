@@ -76,7 +76,7 @@ negative_val = pd.read_csv(negative_val_path)
 negative_test = pd.read_csv(negative_test_path)
 
 # Initialize the BERT tokenizer for text preprocessing
-tokenizer = BertTokenizer.from_pretrained('google-bert/bert-base-multilingual-cased')
+tokenizer = BertTokenizer.from_pretrained('google-bert/bert-base-multilingual-cased', do_lower_case=False)
 
 # Process the datasets for training, validation, and testing, incorporating negative samples
 train_df = process_dataset(train_data, train_data.groupby('CustomerID'), negative_train, "train")
