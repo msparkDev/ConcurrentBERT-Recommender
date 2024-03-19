@@ -200,7 +200,7 @@ negative_val.to_csv(os.path.join(data_dir, 'negative_val.csv'), index=False)
 negative_test.to_csv(os.path.join(data_dir, 'negative_test.csv'), index=False)
 
 # Initialize tokenizer and process datasets for BERT
-tokenizer = BertTokenizer.from_pretrained('google-bert/bert-base-multilingual-cased')
+tokenizer = BertTokenizer.from_pretrained('google-bert/bert-base-multilingual-cased', do_lower_case=False)
 
 grouped_train = train_data.groupby('CustomerID')
 grouped_val = validation_data.groupby('CustomerID')
