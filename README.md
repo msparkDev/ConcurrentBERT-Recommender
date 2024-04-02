@@ -1,4 +1,4 @@
-# Enhancing E-commerce Recommendation Systems with Concurrent Purchase Data: A Transformer-Based Approach
+# Enhancing E-commerce Recommendation Systems with Concurrent Purchase Data: A BERT-Based Approach
 
 ## Authors
 - Minseo Park
