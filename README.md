@@ -1,4 +1,4 @@
-# Enhancing E-commerce Recommendation Systems with Concurrent Purchase Data: A BERT-Based Approach
+# Enhancing e-commerce recommendation systems with concurrent purchase data: a BERT-based approach
 
 ## Authors
 - Minseo Park
