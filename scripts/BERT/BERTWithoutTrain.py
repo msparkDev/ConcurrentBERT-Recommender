@@ -10,7 +10,11 @@ file_paths = {
     "val": 'data/BERT_SinglePurchases/valForBERT_WCP.csv'
 }
 
+<<<<<<< HEAD:scripts/BERT/BERTWithoutTrain.py
 # Loads the tokenizer for the specified BERT model checkpoint.
+=======
+# Defines the BERT model checkpoint for tokenizer initialization.
+>>>>>>> 7f1ff6c0d40b0dc1a08037ba622bc0ac81e4415a:scripts/BERT_SinglePurchases_Training.py
 model_ckpt = 'google-bert/bert-base-multilingual-cased'
 tokenizer = BertTokenizer.from_pretrained(model_ckpt)
 
