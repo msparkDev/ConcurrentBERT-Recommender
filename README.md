@@ -1,8 +1,5 @@
 # Enhancing e-commerce recommendation systems with concurrent purchase data: a BERT-based approach
-
-## Authors
-- Minseo Park
-- Jangmin Oh*
+Minseo Park, Jangmin Oh*
 
 This project introduces a novel approach to enhance e-commerce recommendation systems by incorporating concurrent purchase data alongside transformer-based models like BERT. Our methodology demonstrates significant improvements in predictive accuracy and overall system efficacy, as evidenced by extensive validation on real-world data from Katcher's e-commerce platform.
 
