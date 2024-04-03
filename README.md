@@ -3,8 +3,6 @@ Minseo Park, Jangmin Oh*
 
 This project introduces a novel approach to enhance e-commerce recommendation systems by incorporating concurrent purchase data alongside transformer-based models like BERT. Our methodology demonstrates significant improvements in predictive accuracy and overall system efficacy, as evidenced by extensive validation on real-world data from Katcher's e-commerce platform.
 
-![presentation](https://github.com/msparkDev/ECommTransformerRecSys/assets/158522918/d81e4e5a-2871-40a1-a9e0-f82f2971c102)
-
 ## Key Contributions
 1. **Integration of Concurrent Purchase Data**: Our approach uniquely integrates concurrent purchase data, offering new insights into consumer behavior patterns.
 2. **Transformer-Based Algorithm**: We employ a transformer-based recommendation algorithm, significantly outperforming traditional models in predicting next-product purchases.
