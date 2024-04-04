@@ -7,3 +7,8 @@ A workflow that recommends products that the user is likely to purchase next. Be
 1. Developed a unique system to **integrate concurrent purchase data into e-commerce recommendation models,** enhancing understanding of complex buying patterns.
 2. Applied the BERT transformer model to analyze e-commerce order histories as natural language, capturing deeper product relationships.
 3. Demonstrated through real-world data that **our approach significantly outperforms traditional recommendation systems** in accuracy and predictive performance.
+
+## Dependencies
+To get started with the framework, install the following dependencies:
+- [Python 3.10](https://www.python.org/)
+- `pip install -r requirments.txt`
