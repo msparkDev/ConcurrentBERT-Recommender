@@ -57,3 +57,19 @@ Follow the same steps as for BERT with Concurrent Purchases, but with the follow
 1. Training
 - Change **file_path** from Concurrent (default) to **Single**.
 - Update **output_dir** from ConcPurcBERT-UCIRetail (default) to **SingPurcBERT-UCIRetail**.
+2. Inference
+- Adjust **model_name** from ConcPurcBERT-UCIRetail (default) to **SingPurcBERT-UCIRetail**.
+- Switch **test_set's file_path** from Concurrent (default) to **Single**.
+
+#### DeepFM Training & Inference
+```
+python scripts/DeepFM/TrainEval.py
+```
+- Align **file_path** with either **Concurrent (default)** for with concurrent purchases or **Single** for without.
+- Modify **preprocess_data** function's parameters from **11 (default)** to **6** for setups without concurrent purchases (as the first 5 concurrent_purchase_flag fields are omitted).
+
+#### DeepFM Training & Inference
+```
+python scripts/XGBoost_TrainEval.py
+```
+- Update **sparse_features** from **11 (default)** to **6** when not considering concurrent purchases (due to the omission of the first 5 concurrent_purchase_flag fields).
