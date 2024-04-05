@@ -16,7 +16,7 @@ To get started with the framework, install the following dependencies:
 ## Data
 Due to the proprietary nature of Katchers' dataset, we are unable to make the entire dataset publicly available. However, for demonstration purposes, we have sampled 100 entries from our training data, which can be found at **data/samples/katchers_data.csv** in our repository.
 
-Instead, UCI Online Retail Dataset is publicly available as open-source data, allowing us to share both our data generation process and the outcomes. Follow the commands below to build the data and the resulting processed data are stored in the data folder of our GitHub repository.
+Instead, UCI Online Retail Dataset is publicly available as open-source data, allowing us to share both our data generation process and the outcomes. Follow the commands below to build the data and the resulting processed data are stored in the **data folder** of our GitHub repository.
 
 ### BERT with Concurrent Purchases
 `python scripts/BERT/DataPrepWith.py`
