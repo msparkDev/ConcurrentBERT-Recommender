@@ -54,6 +54,6 @@ python scripts/BERT/Eval.py
 ### Optional Scripts
 #### BERT without Concurrent Purchases
 Follow the same steps as for BERT with Concurrent Purchases, but with the following adjustments:
-- Training
-   - Change **file_path** from Concurrent (default) to **Single**.
-   - Update **output_dir** from ConcPurcBERT-UCIRetail (default) to **SingPurcBERT-UCIRetail**.
+1. Training
+- Change **file_path** from Concurrent (default) to **Single**.
+- Update **output_dir** from ConcPurcBERT-UCIRetail (default) to **SingPurcBERT-UCIRetail**.
