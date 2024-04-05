@@ -24,8 +24,8 @@ Instead, UCI Online Retail Dataset is publicly available as open-source data, al
 ### Optional Scripts
 - BERT without Concurrent Purchases
   
-`python scripts/BERT/DataPrepWithout.py`
+  `python scripts/BERT/DataPrepWithout.py`
 
 - DeepFM & XGBoost (with/without Concurrent Purchases)
   
-`python scripts/DeepFM/DataPrep.py`
+  `python scripts/DeepFM/DataPrep.py`
