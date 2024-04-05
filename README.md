@@ -19,13 +19,35 @@ Due to the proprietary nature of Katchers' dataset, we are unable to make the en
 Instead, UCI Online Retail Dataset is publicly available as open-source data, allowing us to share both our data generation process and the outcomes. Follow the commands below to build the data and the resulting processed data are stored in the **data folder** of our GitHub repository.
 
 ### BERT with Concurrent Purchases
-`python scripts/BERT/DataPrepWith.py`
+```
+python scripts/BERT/DataPrepWith.py
+```
 
 ### Optional Scripts
 - BERT without Concurrent Purchases
   
-  `python scripts/BERT/DataPrepWithout.py`
+  ```
+  python scripts/BERT/DataPrepWithout.py
+  ```
 
 - DeepFM & XGBoost (with/without Concurrent Purchases)
   
-  `python scripts/DeepFM/DataPrep.py`
+  ```
+  python scripts/DeepFM/DataPrep.py
+  ```
+  
+## Training & Inference
+### BERT with Concurrent Purchases
+0. HuggingFace Login
+```
+export HUGGINGFACE_CO='your_huggingface_token_here'
+```
+1. Training
+```
+python scripts/BERT/Train.py
+```
+- Make sure to replace **YourUsernameHere** with your actual HuggingFace account username in the **output_dir** parameter.
+2. Inference
+```
+python scripts/BERT/Eval.py
+```
