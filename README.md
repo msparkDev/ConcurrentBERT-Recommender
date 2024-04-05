@@ -49,3 +49,8 @@ python scripts/BERT/Train.py
 ```
 python scripts/BERT/Eval.py
 ```
+- Make sure to replace **YourUsernameHere** with your actual HuggingFace account username in the **model_name**.
+
+### Optional Scripts
+- BERT without Concurrent Purchases
+  - Follow the same steps as for BERT with Concurrent Purchases, but with the following adjustments:
