@@ -24,12 +24,12 @@ python scripts/BERT/DataPrepWith.py
 ```
 
 ### Optional Scripts
-- BERT without Concurrent Purchases
+#### BERT without Concurrent Purchases
 ```
 python scripts/BERT/DataPrepWithout.py
 ```
 
-- DeepFM & XGBoost (with/without Concurrent Purchases)
+#### DeepFM & XGBoost (with/without Concurrent Purchases)
 ```
 python scripts/DeepFM/DataPrep.py
 ```
