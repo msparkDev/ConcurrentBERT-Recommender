@@ -68,7 +68,7 @@ python scripts/DeepFM/TrainEval.py
 - Align **file_path** with either **Concurrent (default)** for with concurrent purchases or **Single** for without.
 - Modify **preprocess_data** function's parameters from **11 (default)** to **6** for setups without concurrent purchases (as the first 5 concurrent_purchase_flag fields are omitted).
 
-#### DeepFM Training & Inference
+#### XGBoost Training & Inference
 ```
 python scripts/XGBoost_TrainEval.py
 ```
