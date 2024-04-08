@@ -290,13 +290,6 @@ def process_dataset(data, grouped_data, negative_data, mode):
 
 # Main Data Processing
 
-# Import necessary libraries
-import os
-import pandas as pd
-from sklearn.model_selection import GroupShuffleSplit
-from transformers import BertTokenizer
-from ucimlrepo import fetch_ucirepo  # Assuming ucimlrepo is a hypothetical utility for fetching UCI ML repository data
-
 # Fetch and preprocess data from UCI Machine Learning Repository
 data = fetch_ucirepo(id=352).data.original
 
