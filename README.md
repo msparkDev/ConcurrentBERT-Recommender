@@ -14,9 +14,9 @@ To get started with the framework, install the following dependencies:
 - `pip install -r requirments.txt`
 
 ## Data
-Due to the proprietary nature of Katchers' dataset, we are unable to make the entire dataset publicly available. However, for demonstration purposes, we have sampled 100 entries from our training data, which can be found at **data/samples/katchers_data.csv** in our repository.
+The original dataset for Katchers can be accessed at **data/raw_data_katchers.csv**. 
 
-Instead, UCI Online Retail Dataset is publicly available as open-source data, allowing us to share both our data generation process and the outcomes. Follow the commands below to build the data and the resulting processed data are stored in the **data folder** of our GitHub repository.
+For further details and data manipulation, refer to the [OnlineRetailData](https://archive.ics.uci.edu/dataset/352/online+retail). For the benefit of English-speaking users, the process of data preparation, training, and evaluation (Prep/Train/Eval) is explained according to the OnlineRetailData standards.
 
 ### BERT with Concurrent Purchases
 ```
