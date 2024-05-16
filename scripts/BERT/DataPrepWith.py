@@ -120,7 +120,7 @@ def add_text_if_fits(current_text, addition, tokenizer, item_max):
     - new_text or None: The new text string with the addition or None if exceeding token limit.
     """
     new_text = current_text + addition
-    if len(tokenizer(new_text, padding=True, truncation=False).input_ids) < 512:
+    if len(tokenizer(new_text, item_max, padding=True, truncation=False).input_ids) < 512:
         return new_text
     else:
         return None
@@ -156,7 +156,7 @@ def compile_order_history(user_prompt, tokenizer, item_max):
             return user_text
 
         group_size = len(group['Description'])
-        description_counter = 1
+        description_counter = 0
         for description in group['Description']:
             if description_counter > 0:
                 temp = ', and '
