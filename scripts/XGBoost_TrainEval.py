@@ -3,16 +3,9 @@ import numpy as np
 import xgboost as xgb
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.preprocessing import LabelEncoder
-from ucimlrepo import fetch_ucirepo
 
 from scripts.BERT.Eval import calculate_ndcg
 from scripts.DeepFM.TrainEval import load_data, split_data
-
-# Data Loading and Preprocessing
-def load_and_preprocess_data():
-    # Fetch and preprocess data
-    data = fetch_ucirepo(id=352).data.original
-    return data
 
 def encode_features(data, feature_cols):
     # Encode categorical features

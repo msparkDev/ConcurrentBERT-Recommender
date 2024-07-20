@@ -60,7 +60,7 @@ model = BertForNextSentencePrediction.from_pretrained(model_ckpt, num_labels=2).
 
 # Configures training arguments for the Trainer.
 training_args = TrainingArguments(
-    output_dir="YourUsernameHere/ConcPurcBERT-UCIRetail",  # Customize with your Hugging Face username.
+    output_dir="YourUsernameHere/ConcPurcBERT-Katchers",  # Customize with your Hugging Face username.
     num_train_epochs=10,
     learning_rate=2e-5,
     auto_find_batch_size=True,

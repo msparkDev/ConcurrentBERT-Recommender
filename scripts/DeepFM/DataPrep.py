@@ -27,7 +27,7 @@ def process_dataset(group_keys, grouped_data, negative_data, mode):
         user_prompt, user_positive = split_user_data(group_data)  # Split data into prompt and positive examples
         
         # Extract last 5 purchase records for each user
-        last_5_purchases = user_prompt.sort_values(by='InvoiceDate', ascending=False).head(5)
+        last_5_purchases = user_prompt.sort_values(by='initial_paid_at', ascending=False).head(5)
         
         # Generate and append a positive example row
         new_row_positive = create_new_row(last_5_purchases, user_positive)
@@ -35,12 +35,12 @@ def process_dataset(group_keys, grouped_data, negative_data, mode):
         
         if mode in ["train", "validation"]:
             # For training/validation, use a single negative example per user
-            user_negative_sample = negative_data[negative_data.CustomerID == key]
+            user_negative_sample = negative_data[negative_data.user_id == key]
             new_row_negative = create_new_row(last_5_purchases, user_negative_sample.iloc[0], label=0)
             data_rows.append(new_row_negative)
         elif mode == "test":
             # For testing, use all available negative examples
-            user_negative_samples = negative_data[negative_data.CustomerID == key]
+            user_negative_samples = negative_data[negative_data.user_id == key]
             for _, user_negative in user_negative_samples.iterrows():
                 new_row_negative = create_new_row(last_5_purchases, user_negative, label=0)
                 data_rows.append(new_row_negative)
@@ -64,15 +64,15 @@ def create_new_row(last_5_purchases, next_purchase, label=1):
     
     # Populate the new row with product IDs and concurrent purchase flags
     for i in range(len(last_5_purchases)):
-        new_row[f'{i+1}th_purchase_product_id'] = last_5_purchases.iloc[i].StockCode
+        new_row[f'{i+1}th_purchase_product_id'] = last_5_purchases.iloc[i].product_id
         is_concurrent = 0
-        if i > 0 and last_5_purchases.iloc[i].InvoiceDate == last_5_purchases.iloc[i-1].InvoiceDate or \
-           i < len(last_5_purchases) - 1 and last_5_purchases.iloc[i].InvoiceDate == last_5_purchases.iloc[i+1].InvoiceDate:
+        if i > 0 and last_5_purchases.iloc[i].initial_paid_at == last_5_purchases.iloc[i-1].initial_paid_at or \
+           i < len(last_5_purchases) - 1 and last_5_purchases.iloc[i].initial_paid_at == last_5_purchases.iloc[i+1].initial_paid_at:
             is_concurrent = 1
         new_row[f'{i+1}th_concurrent_purchase_flag'] = is_concurrent
     
     # Add the next purchase and label
-    new_row['6th_purchase_product_id'] = next_purchase.StockCode if 'StockCode' in dir(next_purchase) else 0
+    new_row['6th_purchase_product_id'] = next_purchase.product_id if 'product_id' in dir(next_purchase) else 0
     new_row['label'] = label
     
     return new_row
@@ -95,9 +95,9 @@ negative_val = pd.read_csv(os.path.join(data_dir, 'negative_val.csv'))
 negative_test = pd.read_csv(os.path.join(data_dir, 'negative_test.csv'))
 
 # Process datasets for each mode
-train_df = process_dataset(train_data.groupby('CustomerID').groups, train_data.groupby('CustomerID'), negative_train, "train")
-val_df = process_dataset(val_data.groupby('CustomerID').groups, val_data.groupby('CustomerID'), negative_val, "validation")
-test_df = process_dataset(test_data.groupby('CustomerID').groups, test_data.groupby('CustomerID'), negative_test, "test")
+train_df = process_dataset(train_data.groupby('user_id').groups, train_data.groupby('user_id'), negative_train, "train")
+val_df = process_dataset(val_data.groupby('user_id').groups, val_data.groupby('user_id'), negative_val, "validation")
+test_df = process_dataset(test_data.groupby('user_id').groups, test_data.groupby('user_id'), negative_test, "test")
 
 # Drop 'concurrent_purchase' columns for models not utilizing concurrent purchase data
 columns_to_drop = [col for col in train_df.columns if 'concurrent_purchase' in col]

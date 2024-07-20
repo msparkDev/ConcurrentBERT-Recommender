@@ -6,7 +6,7 @@ from datasets import Dataset
 from sklearn.metrics import accuracy_score, f1_score
 
 # Initialize the tokenizer and model
-model_checkpoint = "YourUsernameHere/ConcPurcBERT-UCIRetail"
+model_checkpoint = "YourUsernameHere/ConcPurcBERT-Katchers"
 tokenizer = BertTokenizer.from_pretrained(model_checkpoint)
 model = BertForNextSentencePrediction.from_pretrained(model_checkpoint)
 

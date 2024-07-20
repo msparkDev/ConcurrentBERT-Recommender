@@ -16,8 +16,6 @@ To get started with the framework, install the following dependencies:
 ## Data
 The original dataset for Katchers can be accessed at **data/raw_data_katchers.csv**. 
 
-For further details and data manipulation, refer to the [OnlineRetailData](https://archive.ics.uci.edu/dataset/352/online+retail). For the benefit of English-speaking users, the process of data preparation, training, and evaluation (Prep/Train/Eval) is explained according to the OnlineRetailData standards.
-
 ### BERT with Concurrent Purchases
 ```
 python scripts/BERT/DataPrepWith.py
@@ -73,3 +71,6 @@ python scripts/DeepFM/TrainEval.py
 python scripts/XGBoost_TrainEval.py
 ```
 - Update **sparse_features** from **11 (default)** to **6** when not considering concurrent purchases (due to the omission of the first 5 concurrent_purchase_flag fields).
+
+#### TinyLlama
+For data and code related to TinyLlama, please refer to the **llm-for-rec** folder.

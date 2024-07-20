@@ -1,0 +1,16 @@
+{
+    "model_name_or_path": "./output/rec-sys-llm-single-tuning",
+    "max_length": 768,
+    "raw_data_path": "./raw_data/katchers/single/",
+    "build_dataset": false,
+    "calc_metric_only": true,
+    "dataset_path": "./datasets/katchers/single/",
+    "build_split": "test",
+    "num_negatives": 49,
+    "model_type": "llama2",
+    "output_dir": "./output/rec-sys-llm-single-tuning",
+    "evaluation_path": "./evaluation_katchers_single.pkl",
+    "logging_steps":200,
+    "per_device_eval_batch_size":4,
+    "bf16": true
+}

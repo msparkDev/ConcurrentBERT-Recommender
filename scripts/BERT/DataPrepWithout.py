@@ -17,11 +17,9 @@ def compile_order_history(user_prompt, tokenizer, item_max):
     - A string that represents the user's order history, formatted for BERT input.
     """
     # Initialize order history with a header
-    user_text = "## order history"
-
-    # Ensure 'InvoiceDate' is in datetime format for sorting
-    user_prompt['InvoiceDate'] = pd.to_datetime(user_prompt['InvoiceDate'], format='%m/%d/%Y %H:%M')
-    user_prompt = user_prompt.sort_values('InvoiceDate', ascending=False)
+    user_text = "## 주문 히스토리"
+    user_prompt = user_prompt.sort_values('initial_paid_at', ascending=False)
+    user_prompt_grouped = user_prompt.groupby('initial_paid_at', sort=False)
 
     # Compile order details, checking token limit at each addition
     order_index = 0
@@ -30,7 +28,12 @@ def compile_order_history(user_prompt, tokenizer, item_max):
             detail = ', '
         else:
             detail = ''
-        detail += f"\nOrder on {row['InvoiceDate'].strftime('%m/%d/%Y %H:%M')}: {row['Description']}"
+
+        if pd.notna(row.attribute_values):
+            detail += f'\n{row["initial_paid_at"]}의 주문 내역: {row["category_name"]} - {row["product_name"]} {row["attribute_values"]}'
+        else:
+            detail += f'\n{row["initial_paid_at"]}의 주문 내역: {row["category_name"]} - {row["product_name"]}'
+
         potential_text = add_text_if_fits(user_text, detail, tokenizer, item_max)
         user_text = potential_text if potential_text is not None else user_text
 
@@ -58,9 +61,9 @@ negative_test = pd.read_csv(os.path.join(data_dir, 'negative_test.csv'))
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
 # Process the datasets for training, validation, and testing
-train_df = process_dataset(train_data, train_data.groupby('CustomerID'), negative_train, "train")
-val_df = process_dataset(val_data, val_data.groupby('CustomerID'), negative_val, "validation")
-test_df = process_dataset(test_data, test_data.groupby('CustomerID'), negative_test, "test")
+train_df = process_dataset(train_data, train_data.groupby('user_id'), negative_train, "train")
+val_df = process_dataset(val_data, val_data.groupby('user_id'), negative_val, "validation")
+test_df = process_dataset(test_data, test_data.groupby('user_id'), negative_test, "test")
 
 # Save the processed datasets for model training
 train_df.to_csv(os.path.join(new_data_dir, 'train.csv'), index=False)
