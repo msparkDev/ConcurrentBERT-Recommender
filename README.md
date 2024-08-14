@@ -1,4 +1,4 @@
-# Enhancing e-commerce recommendation systems with concurrent purchase data: a BERT-based approach
+# Enhancing e-commerce recommendation systems with multiple item purchase data: a BERT-based approach
 Minseo Park, Jangmin Oh*
 <img src="https://github.com/msparkDev/ECommTransformerRecSys/blob/main/image.png" width="3000">
 A workflow that recommends products that the user is likely to purchase next. Because our method handles the user's concurrent purchases, it better analyzes the user's more complex patterns and shows higher performance than other methods.
@@ -74,3 +74,6 @@ python scripts/XGBoost_TrainEval.py
 
 #### TinyLlama
 For data and code related to TinyLlama, please refer to the **llm-for-rec** folder.
+
+#### RLMRec
+Experiments with RLMREC can be referenced at [RLMRec GitHub Repository](https://github.com/jangmino/RLMRec/tree/dev-katchers).
